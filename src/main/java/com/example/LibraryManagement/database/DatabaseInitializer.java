@@ -9,7 +9,7 @@ import java.sql.Statement;
 
 @Component
 public class DatabaseInitializer {
-    private static final String DB_URL = "jdbc:sqlite:library_db.sqlite";
+    private static final String DB_URL = "jdbc:sqlite:library_db.sqlite"; // TODO: Retrieve it in a better way
 
     public DatabaseInitializer() {
         // Connecting to the Database or automatically creating it if it doesn't exist
@@ -31,7 +31,8 @@ public class DatabaseInitializer {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 author TEXT NOT NULL,
-                capacity INTEGER NOT NULL
+                availability BOOLEAN DEFAULT 1,
+                UNIQUE (title, author) ON CONFLICT IGNORE
             );
             """;
 
@@ -64,9 +65,9 @@ public class DatabaseInitializer {
     private void createRentalsTable(Connection connection){
         String query = """
             CREATE TABLE IF NOT EXISTS rentals (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 book_id INTEGER NOT NULL,
+                PRIMARY KEY (user_id, book_id),
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 FOREIGN KEY (book_id) REFERENCES books(id)
             );
