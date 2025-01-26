@@ -9,27 +9,52 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
-import java.util.Base64;
 
+/**
+ * The RentalAPI class handles rental-related API endpoints.
+ * It provides methods for getting all rentals, renting a book, and returning a book.
+ */
 @RestController
 @RequestMapping("/api/rentals")
 public class RentalAPI {
+    /**
+     * The RentalRepository instance used to interact with the database.
+     */
     private final RentalRepository rentalRepository;
+    /**
+     * The UserRepository instance used to interact with the database.
+     */
     private final UserRepository userRepository;
 
+    /**
+     * Constructor for the RentalAPI class.
+     * Initializes the RentalRepository and UserRepository instances.
+     */
     public RentalAPI() {
         this.rentalRepository = RentalRepository.getInstance();
         this.userRepository = UserRepository.getInstance();
     }
 
+    /**
+     * API endpoint to retrieve a list of all rentals from the database.
+     *
+     * @return an ArrayList of Rental objects representing all rentals in the database
+     */
     @GetMapping("")
     public ArrayList<Rental> getAllRentals() {
         return rentalRepository.getAllRentals();
     }
 
+    /**
+     * API endpoint to rent a book to a user in the database.
+     * Requires Basic HTTP Authentication.
+     *
+     * @param bookId the id of the book to be rented
+     * @param request the HTTP request containing the username and password
+     * @return a ResponseEntity with an appropriate status code and message
+     */
     @PostMapping("/rent/{bookId}")
     public ResponseEntity<String> rentBook(@PathVariable int bookId, HttpServletRequest request) {
         // Decoding the username and password
@@ -43,7 +68,6 @@ public class RentalAPI {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong user credentials");
         }
         else {
-            // Renting the book
             Rental rental = new Rental(bookId, user.getId());
             if(rentalRepository.rentBook(rental)) {
                 return ResponseEntity.status(HttpStatus.CREATED).body("Book rented successfully");
@@ -54,7 +78,14 @@ public class RentalAPI {
         }
     }
 
-
+    /**
+     * API endpoint to return a book from the database.
+     * Requires Basic HTTP Authentication.
+     *
+     * @param bookId the id of the book to be returned
+     * @param request the HTTP request containing the username and password
+     * @return a ResponseEntity with an appropriate status code and message
+     */
     @PostMapping("/return/{bookId}")
     public ResponseEntity<String> returnBook(@PathVariable int bookId, HttpServletRequest request) {
         // Decoding the username and password

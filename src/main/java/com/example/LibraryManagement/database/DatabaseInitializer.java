@@ -24,7 +24,7 @@ public class DatabaseInitializer {
      * Constructor for DatabaseInitializer class.
      * Initializes the database connection and creates the necessary tables.
      *
-     * @param dbUrl The URL of the SQLite database to connect to. This value is obtained from the application.properties file.
+     * @param dbUrl the URL of the SQLite database to connect to. This value is obtained from the application.properties file.
      */
     public DatabaseInitializer(@Value("${db.url}") String dbUrl) {
         DB_URL = dbUrl;
@@ -46,12 +46,12 @@ public class DatabaseInitializer {
      * The table includes columns for book ID, title, author, and availability.
      * Ensures that each combination of title and author is unique.
      *
-     * @param connection The database connection used to create the table.
+     * @param connection the database connection used to create the table.
      */
     private void createBooksTable(Connection connection){
         String query = """
             CREATE TABLE IF NOT EXISTS books (
-                id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 author TEXT NOT NULL,
                 availability BOOLEAN DEFAULT 1,
@@ -72,7 +72,7 @@ public class DatabaseInitializer {
      * The table includes columns for user ID, username, password hash, and admin status.
      * Ensures that each username is unique.
      *
-     * @param connection The database connection used to create the table.
+     * @param connection the database connection used to create the table.
      */
     private void createUsersTable(Connection connection){
         String query = """
@@ -99,7 +99,7 @@ public class DatabaseInitializer {
      * The table has foreign key constraints referencing the 'users' and 'books' tables.
      * If a book entry is deleted, related rentals are also deleted (ON DELETE CASCADE).
      *
-     * @param connection The database connection used to create the table.
+     * @param connection the database connection used to create the table.
      */
     private void createRentalsTable(Connection connection){
         String query = """

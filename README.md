@@ -1,87 +1,39 @@
-```markdown
-# LibraryManagementApp
+## LibraryManagementApp Overview
 
-LibraryManagementApp is a REST API for managing a library system. This application is built using Spring Boot and Java 17.
+LibraryManagementApp is a REST API built with Java 17, Spring Boot and SQLite.
 
-## Features
+The application is divided into several directories, each responsible for a specific aspect of the system.
 
-- Manage books, authors, and borrowers
-- Track borrowing and returning of books
-- Search for books by various criteria
+### Models
+The models package contains the classes that represent the entities of the system, such as Books and Users.
 
-## Getting Started
+### Database
+The database package contains the classes that are responsible for interacting with the database, such as DatabaseInitializer and BookRepository.
 
-### Prerequisites
+A simple diagram of the database schema:
+![img.png](img.png)
 
-- Java 17 or higher
-- Maven
+### API Endpoints
+The api package contains the classes that are responsible for handling the API endpoints, such as BookAPI and UserAPI.
 
-### Installation
+Book Endpoints
 
-1. Clone the repository:
+GET /api/books: Retrieve a list of all books
+GET /api/books/{id}: Retrieve a book by ID
+POST /api/books: Create a new book
+PUT /api/books/{id}: Update a book by ID
+DELETE /api/books/{id}: Delete a book by ID
+User Endpoints
 
-   ```bash
-   git clone https://github.com/Vag-Soft/LibraryManagementApp.git
-   cd LibraryManagementApp
-   ```
+GET /api/users: Retrieve a list of all users
+GET /api/users/{id}: Retrieve a user by ID
+POST /api/users: Create a new user
+PUT /api/users/{id}: Update a user by ID
+DELETE /api/users/{id}: Delete a user by ID
+Rental Endpoints
 
-2. Build the project using Maven:
-
-   ```bash
-   mvn clean install
-   ```
-
-### Running the Application
-
-To run the application, use the following command:
-
-```bash
-mvn spring-boot:run
-```
-
-The application will start on `http://localhost:8080`.
-
-## Usage
-
-### Endpoints
-
-- `GET /books` - Retrieve a list of all books
-- `POST /books` - Add a new book
-- `PUT /books/{id}` - Update an existing book
-- `DELETE /books/{id}` - Delete a book
-
-### Example Requests
-
-- Retrieve all books:
-
-   ```bash
-   curl -X GET http://localhost:8080/books
-   ```
-
-- Add a new book:
-
-   ```bash
-   curl -X POST http://localhost:8080/books -H "Content-Type: application/json" -d '{"title": "New Book", "author": "Author Name"}'
-   ```
-
-## Built With
-
-- [Spring Boot](https://spring.io/projects/spring-boot) - The framework used
-- [Maven](https://maven.apache.org/) - Dependency Management
-
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-## Acknowledgments
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- etc
-```
-
-Feel free to modify the content as needed and add more specific details about your project.
+GET /api/rentals: Retrieve a list of all rentals
+GET /api/rentals/{id}: Retrieve a rental by ID
+POST /api/rentals: Create a new rental
+PUT /api/rentals/{id}: Update a rental by ID
+DELETE /api/rentals/{id}: Delete a rental by ID

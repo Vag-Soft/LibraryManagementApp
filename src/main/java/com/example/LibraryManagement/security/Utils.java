@@ -4,7 +4,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+/**
+ * The Utils class provides utility security methods
+ */
 public class Utils {
+    /**
+     * Hashes a string using SHA-256.
+     */
     public static String hashString(String input) {
         try {
             MessageDigest hashingAlgo = MessageDigest.getInstance("SHA-256");
@@ -23,6 +29,9 @@ public class Utils {
         }
     }
 
+    /**
+     * Decodes the Authorization header and returns the username and hashed password.
+     */
     public static String[] decodeAuthHeader(String authHeader) {
         // Extracting the encoded username and password from the Authorization header
         String[] credentials = authHeader.split(" ");
