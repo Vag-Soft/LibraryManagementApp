@@ -20,7 +20,7 @@ The database directory contains the classes responsible for interacting with the
 - **UserRepository**
 - **RentalRepository**
   
-All the tables are initially empty.
+The database file (library_db.sqlite) will be created the first time the app is executed and all tables will be empty.
 
 #### Database Schema
 A simple diagram of the database schema:
