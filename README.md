@@ -104,3 +104,9 @@ The root of all API endpoints is http://localhost:8081/api
   Return a book from the library based on its id.  Requires Basic HTTP Authentication. Both admins and member users can access this endpoint.
 
   ```curl -L -X POST "http://localhost:8081/api/rentals/return/1" -u "user:user"```
+
+### Security
+The security directory contains the Utils class which provides helpful methods for the API 
+
+### Main
+The LibraryManagementMain class contains the main() method that starts the program
