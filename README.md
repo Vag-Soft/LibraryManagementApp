@@ -61,12 +61,12 @@ The root of all API endpoints is http://localhost:8081/api
 
   Retrieve all books with the given title
   
-  ```curl -L "http://localhost:8081/api/books/title/The Hobbit"```
+  ```curl -L "http://localhost:8081/api/books/title/The%20Hobbit"```
 - **GET /api/books/author/{author}**:
 
   Retrieve all books with the given author
   
-  ```curl -L "http://localhost:8081/api/books/author/J.R.R Tolkien"```
+  ```curl -L "http://localhost:8081/api/books/author/J.R.R.%20Tolkien"```
 - **GET /api/books/id/{id}**:
 
   Retrieve a specific book by its id
