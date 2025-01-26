@@ -1,39 +1,106 @@
-## LibraryManagementApp Overview
+# LibraryManagementApp
 
-LibraryManagementApp is a REST API built with Java 17, Spring Boot and SQLite.
+LibraryManagementApp is a REST API built with Java 17, Spring Boot, and SQLite.
 
-The application is divided into several directories, each responsible for a specific aspect of the system.
+## Directory Structure
+
+The application is organized into the following directories:
 
 ### Models
-The models package contains the classes that represent the entities of the system, such as Books and Users.
+The models directory contains the classes that represent the entities of the system, such as:
+- **Book**
+- **User**
+- **Rental**
+- **RegisterInfo**
 
 ### Database
-The database package contains the classes that are responsible for interacting with the database, such as DatabaseInitializer and BookRepository.
+The database directory contains the classes responsible for interacting with the database, including:
+- **DatabaseInitializer**
+- **BookRepository**
+- **UserRepository**
+- **RentalRepository**
+  
+All the tables are initially empty.
 
+#### Database Schema
 A simple diagram of the database schema:
-![img.png](img.png)
 
-### API Endpoints
-The api package contains the classes that are responsible for handling the API endpoints, such as BookAPI and UserAPI.
+![Database Schema](img.png)
 
-Book Endpoints
+### API 
+The api directory contains the classes for handling API endpoints, such as:
+- **BookAPI**
+- **UserAPI**
+- **RentalAPI**
 
-GET /api/books: Retrieve a list of all books
-GET /api/books/{id}: Retrieve a book by ID
-POST /api/books: Create a new book
-PUT /api/books/{id}: Update a book by ID
-DELETE /api/books/{id}: Delete a book by ID
-User Endpoints
+## API Endpoints
+The root of all API endpoints is http://localhost:8081/api
 
-GET /api/users: Retrieve a list of all users
-GET /api/users/{id}: Retrieve a user by ID
-POST /api/users: Create a new user
-PUT /api/users/{id}: Update a user by ID
-DELETE /api/users/{id}: Delete a user by ID
-Rental Endpoints
+### User Endpoints
+- **GET /api/users**:
 
-GET /api/rentals: Retrieve a list of all rentals
-GET /api/rentals/{id}: Retrieve a rental by ID
-POST /api/rentals: Create a new rental
-PUT /api/rentals/{id}: Update a rental by ID
-DELETE /api/rentals/{id}: Delete a rental by ID
+  Retrieve a list of all users
+
+  ```curl -L "http://localhost:8081/api/users"```
+- **POST /api/users**:
+
+  Create a new user
+  
+  ```curl -L "http://localhost:8081/api/users/register" -H "Content-Type: application/json" -d "{\"username\":\"user\",\"password\":\"user\",\"admin\":0}"```
+  
+  ```curl -L "http://localhost:8081/api/users/register" -H "Content-Type: application/json" -d "{\"username\":\"admin\",\"password\":\"admin\",\"admin\":1}"```
+
+  
+### Book Endpoints
+- **GET /api/books**:
+
+  Retrieve a list of all books
+  
+  ```curl -L "http://localhost:8081/api/books"```
+- **GET /api/books/title/{title}**:
+
+  Retrieve all books with the given title
+  
+  ```curl -L "http://localhost:8081/api/books/title/The Hobbit"```
+- **GET /api/books/author/{author}**:
+
+  Retrieve all books with the given author
+  
+  ```curl -L "http://localhost:8081/api/books/author/J.R.R Tolkien"```
+- **GET /api/books/id/{id}**:
+
+  Retrieve a specific book by its id
+  
+  ```curl -L "http://localhost:8081/api/books/id/1"```
+- **POST /api/books/add**:
+
+  Add a book to the library. Requires Basic HTTP Authentication with an admin's user credentials.
+  
+  ```curl -L "http://localhost:8081/api/books/add" -H "Content-Type: application/json" -u "admin:admin" -d "{\"title\": \"The Hobbit\",\"author\": \"J.R.R. Tolkien\" }"```
+- **POST /api/books/delete/{id}**:
+
+  Delete a book from the library based on its id. Requires Basic HTTP Authentication with an admin's user credentials.
+  
+  ```curl -L POST "http://localhost:8081/api/books/delete/1" -u "admin:admin"```
+- **POST /api/books/update/{id}**:
+
+  Update a book from the library based on its id. Requires Basic HTTP Authentication with an admin's user credentials.
+  
+  ```curl -L POST "http://localhost:8081/api/books/update/1" -H "Content-Type: application/json" -u "admin:admin" -d "{\"title\": \"The Lord Of The Rings\",\"author\": \"J.R.R. Tolkien\" }"```
+
+### Rental Endpoints
+- **GET /api/rentals**:
+
+  Retrieve a list of all rentals
+  
+  ```curl -L "http://localhost:8081/api/rentals"```
+- **POST /api/rentals/rent/{id}**:
+
+  Rent a book from the library based on its id.  Requires Basic HTTP Authentication. Both admins and member users can access this endpoint.
+  
+  ```curl -L -X POST "http://localhost:8081/api/rentals/rent/1" -u "user:user"```
+- **POST /api/rentals/return/{id}**:
+
+  Return a book from the library based on its id.  Requires Basic HTTP Authentication. Both admins and member users can access this endpoint.
+
+  ```curl -L -X POST "http://localhost:8081/api/rentals/return/1" -u "user:user"```
