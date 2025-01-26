@@ -51,12 +51,12 @@ public class RentalAPI {
      * API endpoint to rent a book to a user in the database.
      * Requires Basic HTTP Authentication.
      *
-     * @param bookId the id of the book to be rented
+     * @param id the id of the book to be rented
      * @param request the HTTP request containing the username and password
      * @return a ResponseEntity with an appropriate status code and message
      */
-    @PostMapping("/rent/{bookId}")
-    public ResponseEntity<String> rentBook(@PathVariable int bookId, HttpServletRequest request) {
+    @PostMapping("/rent/{id}")
+    public ResponseEntity<String> rentBook(@PathVariable int id, HttpServletRequest request) {
         // Decoding the username and password
         String[] decodedCredentials = Utils.decodeAuthHeader(request.getHeader("Authorization"));
         String username = decodedCredentials[0];
@@ -68,7 +68,7 @@ public class RentalAPI {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong user credentials");
         }
         else {
-            Rental rental = new Rental(bookId, user.getId());
+            Rental rental = new Rental(id, user.getId());
             if(rentalRepository.rentBook(rental)) {
                 return ResponseEntity.status(HttpStatus.CREATED).body("Book rented successfully");
             } else {
@@ -82,12 +82,12 @@ public class RentalAPI {
      * API endpoint to return a book from the database.
      * Requires Basic HTTP Authentication.
      *
-     * @param bookId the id of the book to be returned
+     * @param id the id of the book to be returned
      * @param request the HTTP request containing the username and password
      * @return a ResponseEntity with an appropriate status code and message
      */
-    @PostMapping("/return/{bookId}")
-    public ResponseEntity<String> returnBook(@PathVariable int bookId, HttpServletRequest request) {
+    @PostMapping("/return/{id}")
+    public ResponseEntity<String> returnBook(@PathVariable int id, HttpServletRequest request) {
         // Decoding the username and password
         String[] decodedCredentials = Utils.decodeAuthHeader(request.getHeader("Authorization"));
         String username = decodedCredentials[0];
@@ -100,7 +100,7 @@ public class RentalAPI {
         }
         else {
             // Returning the book
-            Rental rental = new Rental(bookId, user.getId());
+            Rental rental = new Rental(id, user.getId());
             if(rentalRepository.returnBook(rental)) {
                 return ResponseEntity.status(HttpStatus.OK).body("Book returned successfully");
             } else {
