@@ -4,6 +4,8 @@ public class Rental {
     private int userId;
     private int bookId;
 
+    public Rental() {}
+
     public Rental(int bookId, int userId) {
         this.bookId = bookId;
         this.userId = userId;

@@ -26,10 +26,9 @@ public class LibraryManagement {
 		bookRepository.addBook(new Book("The Lord of the Rings", "J.R.R. Tolkien"));
 		bookRepository.addBook(new Book("The Hobbit", "J.R.R. Tolkien"));
 
+		rentalRepository.rentBook(new Rental(1, 1));
 
-		System.out.println(rentalRepository.rentBook(new Rental(1, 1)));
-
-
+		bookRepository.deleteBookByID(1);
 
 
 		System.out.println(userRepository.getAllUsers());

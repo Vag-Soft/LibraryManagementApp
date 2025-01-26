@@ -113,13 +113,30 @@ public class RentalRepository {
             ArrayList<Rental> allRentals = new ArrayList<>();
             while (resultSet.next()) {
                 Rental rental = new Rental(
-                        resultSet.getInt("user_id"),
-                        resultSet.getInt("book_id")
+                        resultSet.getInt("book_id"),
+                        resultSet.getInt("user_id")
                 );
 
                 allRentals.add(rental);
             }
             return allRentals; //TODO: Check null
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean deleteRentalsByBookId(int bookId) {
+        String query = """
+                    DELETE FROM rentals
+                    WHERE book_id=?
+                    """;
+
+        try(Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement prepStatement = connection.prepareStatement(query)) {
+            prepStatement.setInt(1, bookId);
+
+            return prepStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

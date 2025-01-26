@@ -1,11 +1,13 @@
 package com.example.LibraryManagement.database;
 
 import com.example.LibraryManagement.models.Book;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
+@Repository
 public class BookRepository {
     private static final String DB_URL = "jdbc:sqlite:library_db.sqlite";
     private static BookRepository book_repository_instance = null;
@@ -63,6 +65,7 @@ public class BookRepository {
         if(oldBook == null || newBook == null) {
             return false;
         }
+
         if(newBook.getTitle() == null)
             newBook.setTitle(oldBook.getTitle());
         if(newBook.getAuthor() == null)

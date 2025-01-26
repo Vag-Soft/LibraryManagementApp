@@ -4,9 +4,9 @@ public class Book {
     private int id;
     private String title;
     private String author;
-
-
     private boolean availability;
+
+    public Book() {}
 
     public Book(String title, String author) {
         this.title = title;

@@ -106,6 +106,36 @@ public class UserRepository {
         }
     }
 
+    public Optional<User> authenticateUser(String username, String password) {
+        String query = """
+                    SELECT *
+                    FROM users
+                    WHERE username=? AND password=?
+                    """;
+
+        try(Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement prepStatement = connection.prepareStatement(query)) {
+            prepStatement.setString(1, username);
+            prepStatement.setString(2, password);
+
+            ResultSet resultSet = prepStatement.executeQuery();
+
+            User user = null;
+            while (resultSet.next()) {
+                user = new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("username"),
+                        resultSet.getString("password"),
+                        resultSet.getBoolean("admin")
+                );
+            }
+            return Optional.ofNullable(user);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public ArrayList<User> getAllUsers() {
         String query = """

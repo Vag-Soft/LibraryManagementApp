@@ -6,6 +6,8 @@ public class User {
     private String password;
     private Boolean admin;
 
+    public User() {}
+
     public User(String username, String password, Boolean admin) {
         this.username = username;
         this.password = password;
