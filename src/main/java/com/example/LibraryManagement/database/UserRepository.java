@@ -1,23 +1,27 @@
 package com.example.LibraryManagement.database;
 
 import com.example.LibraryManagement.models.User;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
+@Component
 public class UserRepository {
-    private static final String DB_URL = "jdbc:sqlite:library_db.sqlite";
+    private static String DB_URL;
     private static UserRepository user_repository_instance = null;
 
-    private UserRepository() {
-
+    private UserRepository(@Value("${db.url}") String dbUrl) {
+        // Initializing DB_URL from application.properties
+        DB_URL = dbUrl;
     }
 
     public static UserRepository getInstance()
     {
         if (user_repository_instance == null)
-            user_repository_instance = new UserRepository();
+            user_repository_instance = new UserRepository(DB_URL);
 
         return user_repository_instance;
     }
@@ -30,14 +34,14 @@ public class UserRepository {
         }
 
         String query = """
-                    INSERT INTO users (username, password, admin)
+                    INSERT INTO users (username, password_hash, admin)
                     VALUES (?,?,?)
                     """;
 
         try(Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement prepStatement = connection.prepareStatement(query)) {
             prepStatement.setString(1, user.getUsername());
-            prepStatement.setString(2, user.getPassword());
+            prepStatement.setString(2, user.getPasswordHash());
             prepStatement.setBoolean(3, user.getAdmin());
 
             return prepStatement.executeUpdate() > 0;
@@ -66,7 +70,7 @@ public class UserRepository {
                 user = new User(
                         resultSet.getInt("id"),
                         resultSet.getString("username"),
-                        resultSet.getString("password"),
+                        resultSet.getString("password_hash"),
                         resultSet.getBoolean("admin")
                 );
             }
@@ -95,7 +99,7 @@ public class UserRepository {
                 user = new User(
                         resultSet.getInt("id"),
                         resultSet.getString("username"),
-                        resultSet.getString("password"),
+                        resultSet.getString("password_hash"),
                         resultSet.getBoolean("admin")
                 );
             }
@@ -106,17 +110,17 @@ public class UserRepository {
         }
     }
 
-    public Optional<User> authenticateUser(String username, String password) {
+    public Optional<User> authenticateUser(String username, String hashedPassword) {
         String query = """
                     SELECT *
                     FROM users
-                    WHERE username=? AND password=?
+                    WHERE username=? AND password_hash=?
                     """;
 
         try(Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement prepStatement = connection.prepareStatement(query)) {
             prepStatement.setString(1, username);
-            prepStatement.setString(2, password);
+            prepStatement.setString(2, hashedPassword);
 
             ResultSet resultSet = prepStatement.executeQuery();
 
@@ -125,7 +129,7 @@ public class UserRepository {
                 user = new User(
                         resultSet.getInt("id"),
                         resultSet.getString("username"),
-                        resultSet.getString("password"),
+                        resultSet.getString("password_hash"),
                         resultSet.getBoolean("admin")
                 );
             }
@@ -153,13 +157,13 @@ public class UserRepository {
                 User user = new User(
                         resultSet.getInt("id"),
                         resultSet.getString("username"),
-                        resultSet.getString("password"),
+                        resultSet.getString("password_hash"),
                         resultSet.getBoolean("admin")
                 );
 
                 allUsers.add(user);
             }
-            return allUsers; //TODO: Check null
+            return allUsers;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

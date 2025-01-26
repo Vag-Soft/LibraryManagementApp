@@ -1,5 +1,6 @@
 package com.example.LibraryManagement.database;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.sql.DriverManager;
@@ -9,9 +10,11 @@ import java.sql.Statement;
 
 @Component
 public class DatabaseInitializer {
-    private static final String DB_URL = "jdbc:sqlite:library_db.sqlite"; // TODO: Retrieve it in a better way
+    private static String DB_URL;
 
-    public DatabaseInitializer() {
+    public DatabaseInitializer(@Value("${db.url}") String dbUrl) {
+        // Initializing DB_URL from application.properties
+        DB_URL = dbUrl;
         // Connecting to the Database or automatically creating it if it doesn't exist
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
             System.out.println("Connected to SQLite database");
@@ -35,7 +38,7 @@ public class DatabaseInitializer {
                 UNIQUE (title, author) ON CONFLICT IGNORE
             );
             """;
-//TODO: Autoincrement works even when conflict
+
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
             System.out.println("Checked/Created 'books' table.");
@@ -49,7 +52,7 @@ public class DatabaseInitializer {
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
+                password_hash TEXT NOT NULL,
                 admin BOOLEAN NOT NULL
             );
             """;

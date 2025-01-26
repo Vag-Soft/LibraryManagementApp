@@ -3,26 +3,32 @@ package com.example.LibraryManagement.database;
 import com.example.LibraryManagement.models.Book;
 import com.example.LibraryManagement.models.Rental;
 import com.example.LibraryManagement.models.User;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
+@Component
 public class RentalRepository {
-    private static final String DB_URL = "jdbc:sqlite:library_db.sqlite";
+    private static String DB_URL;
     private final UserRepository user_repository_instance;
     private final BookRepository book_repository_instance;
     private static RentalRepository rental_repository_instance = null;
 
 
-    private RentalRepository() {
+    private RentalRepository(@Value("${db.url}") String dbUrl) {
+        // Initializing DB_URL from application.properties
+        DB_URL = dbUrl;
+
         user_repository_instance = UserRepository.getInstance();
         book_repository_instance = BookRepository.getInstance();
     }
 
     public static RentalRepository getInstance() {
         if (rental_repository_instance == null)
-            rental_repository_instance = new RentalRepository();
+            rental_repository_instance = new RentalRepository(DB_URL);
 
         return rental_repository_instance;
     }
@@ -44,8 +50,7 @@ public class RentalRepository {
             prepStatement.setInt(2, rental.getBookId());
 
             if(prepStatement.executeUpdate() > 0) {
-                book_repository_instance.updateBookById(rental.getBookId(), new Book(rental.getBookId(), null, null, false));
-                return true;
+                return book_repository_instance.updateBookAvailability(rental.getBookId(), false);
             }
             return false;
 
@@ -70,8 +75,7 @@ public class RentalRepository {
             prepStatement.setInt(2, rental.getBookId());
 
             if(prepStatement.executeUpdate() > 0) {
-                book_repository_instance.updateBookById(rental.getBookId(), new Book(rental.getBookId(), null, null, true));
-                return true;
+                return book_repository_instance.updateBookAvailability(rental.getBookId(), true);
             }
             return false;
 
@@ -119,7 +123,7 @@ public class RentalRepository {
 
                 allRentals.add(rental);
             }
-            return allRentals; //TODO: Check null
+            return allRentals;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

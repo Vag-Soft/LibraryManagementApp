@@ -1,6 +1,7 @@
 package com.example.LibraryManagement.database;
 
 import com.example.LibraryManagement.models.Book;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -9,18 +10,19 @@ import java.util.Optional;
 
 @Repository
 public class BookRepository {
-    private static final String DB_URL = "jdbc:sqlite:library_db.sqlite";
+    private static String DB_URL;
     private static BookRepository book_repository_instance = null;
 
 
-    private BookRepository() {
-
+    private BookRepository(@Value("${db.url}") String dbUrl) {
+        // Initializing DB_URL from application.properties
+        DB_URL = dbUrl;
     }
 
     public static BookRepository getInstance()
     {
         if (book_repository_instance == null)
-            book_repository_instance = new BookRepository();
+            book_repository_instance = new BookRepository(DB_URL);
 
         return book_repository_instance;
     }
@@ -44,17 +46,22 @@ public class BookRepository {
     }
 
     public boolean deleteBookByID(int id) {
-        String query = """
+        try(Connection connection = DriverManager.getConnection(DB_URL)) {
+            connection.prepareStatement("PRAGMA foreign_keys = ON").execute();
+
+            String query = """
                 DELETE FROM books
                 WHERE id=?
                 """;
 
-        try(Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement prepStatement = connection.prepareStatement(query)) {
-            prepStatement.setInt(1 ,id);
+            try(PreparedStatement prepStatement = connection.prepareStatement(query)) {
+                prepStatement.setInt(1 ,id);
 
-            return prepStatement.executeUpdate() > 0;
-
+                if(prepStatement.executeUpdate() > 0) {
+                    return true;
+                }
+                return false;
+            }
         } catch(SQLException e) {
             throw new RuntimeException(e);
         }
@@ -62,7 +69,7 @@ public class BookRepository {
 
     public boolean updateBookById(int id, Book  newBook) {
         Book oldBook = findBookById(id).orElse(null);
-        if(oldBook == null || newBook == null) {
+        if(oldBook == null || newBook == null || oldBook.equals(newBook)) {
             return false;
         }
 
@@ -73,7 +80,7 @@ public class BookRepository {
 
         String query = """
                 UPDATE books
-                SET title=?, author=?, availability=?
+                SET title=?, author=?
                 WHERE id=?
                 """;
 
@@ -82,8 +89,27 @@ public class BookRepository {
 
             prepStatement.setString(1 , newBook.getTitle());
             prepStatement.setString(2 , newBook.getAuthor());
-            prepStatement.setBoolean(3 , newBook.getAvailability());
-            prepStatement.setInt(4 ,id);
+            prepStatement.setInt(3 ,id);
+
+            return prepStatement.executeUpdate() > 0;
+
+        } catch(SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateBookAvailability(int id, boolean availability) {
+        String query = """
+                UPDATE books
+                SET availability=?
+                WHERE id=?
+                """;
+
+        try(Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement prepStatement = connection.prepareStatement(query)) {
+
+            prepStatement.setBoolean(1 , availability);
+            prepStatement.setInt(2 ,id);
 
             return prepStatement.executeUpdate() > 0;
 
@@ -114,7 +140,7 @@ public class BookRepository {
 
                 allBooks.add(book);
             }
-            return allBooks; //TODO: Check null
+            return allBooks;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

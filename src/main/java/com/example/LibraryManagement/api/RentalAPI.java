@@ -4,6 +4,7 @@ import com.example.LibraryManagement.database.RentalRepository;
 import com.example.LibraryManagement.database.UserRepository;
 import com.example.LibraryManagement.models.Rental;
 import com.example.LibraryManagement.models.User;
+import com.example.LibraryManagement.security.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,17 +32,13 @@ public class RentalAPI {
 
     @PostMapping("/rent/{bookId}")
     public ResponseEntity<String> rentBook(@PathVariable int bookId, HttpServletRequest request) {
-        // Extracting the encoded username and password from the Authorization header
-        String authHeader = request.getHeader("Authorization");
-        String[] credentials = authHeader.split(" ");
         // Decoding the username and password
-        String decodedCredentials = new String(Base64.getDecoder().decode(credentials[1]));
-        String[] usernameAndPassword = decodedCredentials.split(":");
-        String username = usernameAndPassword[0];
-        String password = usernameAndPassword[1];
+        String[] decodedCredentials = Utils.decodeAuthHeader(request.getHeader("Authorization"));
+        String username = decodedCredentials[0];
+        String hashedPassword = decodedCredentials[1];
 
         // Authenticating the user
-        User user = userRepository.authenticateUser(username, password).orElse(null);
+        User user = userRepository.authenticateUser(username, hashedPassword).orElse(null);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong user credentials");
         }
@@ -60,17 +57,13 @@ public class RentalAPI {
 
     @PostMapping("/return/{bookId}")
     public ResponseEntity<String> returnBook(@PathVariable int bookId, HttpServletRequest request) {
-        // Extracting the encoded username and password from the Authorization header
-        String authHeader = request.getHeader("Authorization");
-        String[] credentials = authHeader.split(" ");
         // Decoding the username and password
-        String decodedCredentials = new String(Base64.getDecoder().decode(credentials[1]));
-        String[] usernameAndPassword = decodedCredentials.split(":");
-        String username = usernameAndPassword[0];
-        String password = usernameAndPassword[1];
+        String[] decodedCredentials = Utils.decodeAuthHeader(request.getHeader("Authorization"));
+        String username = decodedCredentials[0];
+        String hashedPassword = decodedCredentials[1];
 
         // Authenticating the user
-        User user = userRepository.authenticateUser(username, password).orElse(null);
+        User user = userRepository.authenticateUser(username, hashedPassword).orElse(null);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong user credentials");
         }
