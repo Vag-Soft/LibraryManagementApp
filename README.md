@@ -81,7 +81,7 @@ The root of all API endpoints is http://localhost:8081/api
 
   Delete a book from the library based on its id. Requires Basic HTTP Authentication with an admin's user credentials.
   
-  ```curl -L POST "http://localhost:8081/api/books/delete/1" -u "admin:admin"```
+  ```curl -L -X POST "http://localhost:8081/api/books/delete/1" -u "admin:admin"```
 - **POST /api/books/update/{id}**:
 
   Update a book from the library based on its id. Requires Basic HTTP Authentication with an admin's user credentials.
